@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutterdoublerender/android_view/android_widget_controller.dart';
 
 class AndroidWidget extends StatefulWidget{
 
@@ -27,11 +28,23 @@ class AndroidWidgetState extends State<AndroidWidget> {
 
   AndroidWidgetState(this.size);
 
+  final AndroidWidgetController androidWidgetController = AndroidWidgetController();
   Rect _rect;
   Timer _resizeTimer;
 
   var onBack;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _resizeTimer?.cancel();
+  }
 
 
   @override
@@ -40,9 +53,14 @@ class AndroidWidgetState extends State<AndroidWidget> {
       onRectChanged: (Rect value){
         if(_rect == null){
           _rect = value;
+          androidWidgetController.launchView(rect: _rect);
         }else{
           if(_rect != value){
             _rect = value;
+            _resizeTimer?.cancel();
+            _resizeTimer = Timer(const Duration(milliseconds: 250),(){
+              androidWidgetController.resize(rect: _rect);
+            });
           }
         }
       },
