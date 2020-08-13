@@ -12,12 +12,13 @@ import 'package:flutterdoublerender/android_view/android_widget_controller.dart'
 class AndroidWidget extends StatefulWidget{
 
   final Size size;
+  final String viewId;
 
-  const AndroidWidget({Key key, this.size}) : super(key: key);
+  const AndroidWidget({Key key, this.size, this.viewId}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return AndroidWidgetState(size);
+    return AndroidWidgetState(size,viewId);
   }
   
 }
@@ -25,10 +26,11 @@ class AndroidWidget extends StatefulWidget{
 class AndroidWidgetState extends State<AndroidWidget> {
 
   final Size size;
+  final String viewId;
 
-  AndroidWidgetState(this.size);
+  AndroidWidgetState(this.size,this.viewId);
 
-  final AndroidWidgetController androidWidgetController = AndroidWidgetController();
+  AndroidWidgetController androidWidgetController;
   Rect _rect;
   Timer _resizeTimer;
 
@@ -36,7 +38,7 @@ class AndroidWidgetState extends State<AndroidWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    androidWidgetController = AndroidWidgetController.getInstance(viewId: viewId);
     super.initState();
   }
 
@@ -44,6 +46,10 @@ class AndroidWidgetState extends State<AndroidWidget> {
   void dispose() {
     super.dispose();
     _resizeTimer?.cancel();
+    androidWidgetController.close();
+    androidWidgetController = null;
+    _resizeTimer?.cancel();
+    _resizeTimer = null;
   }
 
 
